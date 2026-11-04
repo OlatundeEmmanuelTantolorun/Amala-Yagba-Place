@@ -33,6 +33,7 @@ export const site = {
       ["Tuesday", "8 am–10 pm"],
     ],
   },
+  feedbackEmail: "", // Set the restaurant feedback inbox to enable email-based feedback.
   social: { TikTok: "https://www.tiktok.com/@fareedaesq", Instagram: "#", Facebook: "#" },
   currency: "₦",
   seo: { title: "Amala Yagba Place — Lokoja", description: "Amala and Nigerian favourites in Lokoja. Dine-in, takeaway, delivery and catering.", location: "Lokoja" },

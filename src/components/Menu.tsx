@@ -10,7 +10,7 @@ const cats = Object.keys(config.menu);
 const money = (amount: number) =>
   `${config.currency}${amount.toLocaleString()}`;
 
-export default function Menu() {
+export default function Menu({ fullPage = false }: { fullPage?: boolean }) {
   const [cat, setCat] = useState(cats[0]);
   const [sel, setSel] = useState<{ d: Dish; seed: number } | null>(null);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -41,12 +41,16 @@ export default function Menu() {
     <section
       id="menu"
       aria-labelledby="menu-heading"
-      className="mx-auto max-w-[1280px] px-6 py-20 sm:py-28 md:px-12 md:py-40"
+      className={`mx-auto max-w-[1280px] px-6 py-20 sm:py-28 md:px-12 ${fullPage ? "md:py-28" : "md:py-40"}`}
     >
       <div className="mb-10 flex flex-col items-start justify-between gap-6 sm:mb-14 sm:flex-row sm:items-end">
-        <h2 id="menu-heading" className="font-display text-5xl md:text-7xl">
-          The menu
-        </h2>
+        <div>
+          {fullPage && <p className="eyebrow mb-4 text-ember">Find your favourite</p>}
+          <h2 id="menu-heading" className="font-display text-5xl md:text-7xl">
+            {fullPage ? "The menu" : "The menu"}
+          </h2>
+          {fullPage && <p className="mt-3 max-w-[38ch] text-sm leading-relaxed text-muted">Browse by category. Select a dish to see details and send your order directly to us.</p>}
+        </div>
         <div
           role="tablist"
           aria-label="Menu categories"
@@ -80,26 +84,26 @@ export default function Menu() {
         aria-labelledby={`menu-tab-${cats.indexOf(cat)}`}
         tabIndex={0}
       >
-        <ul className="grid gap-x-10 md:grid-cols-2 md:gap-x-16">
+        <ul className={`grid gap-x-8 ${fullPage ? "gap-y-7 sm:grid-cols-2 lg:grid-cols-3" : "md:grid-cols-2 md:gap-x-16"}`}>
           {config.menu[cat].map((dish, index) => {
             const seed = cats.indexOf(cat) * 4 + index;
             return (
-              <li key={dish.name} className="min-w-0 border-t border-line">
+              <li key={dish.name} className={`min-w-0 ${fullPage ? "border-b border-line pb-5" : "border-t border-line"}`}>
                 <button
                   type="button"
                   onClick={() => setSel({ d: dish, seed })}
                   aria-label={`View ${dish.name}, ${money(dish.price)}`}
-                  className="group flex w-full min-w-0 items-center gap-4 py-5 text-left sm:gap-5 sm:py-6"
+                  className={`group flex w-full min-w-0 text-left ${fullPage ? "flex-col items-stretch gap-4 pb-2" : "items-center gap-4 py-5 sm:gap-5 sm:py-6"}`}
                 >
                   {sel?.d.name === dish.name ? (
                     <div
                       aria-hidden
-                      className="size-20 shrink-0 sm:size-24 md:size-28"
+                      className={fullPage ? "aspect-[5/3] w-full shrink-0" : "size-20 shrink-0 sm:size-24 md:size-28"}
                     />
                   ) : (
                     <motion.div
                       layoutId={`img-${dish.name}`}
-                      className="size-20 shrink-0 overflow-hidden sm:size-24 md:size-28"
+                      className={fullPage ? "aspect-[5/3] w-full shrink-0 overflow-hidden" : "size-20 shrink-0 overflow-hidden sm:size-24 md:size-28"}
                     >
                       <Img
                         src={dish.image}
@@ -111,7 +115,7 @@ export default function Menu() {
                   )}
                   <span className="min-w-0 flex-1">
                     <span className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                      <span className="font-display text-xl leading-tight sm:text-2xl md:text-[28px]">
+                      <span className={`font-display leading-tight ${fullPage ? "text-2xl sm:text-3xl" : "text-xl sm:text-2xl md:text-[28px]"}`}>
                         {dish.name}
                       </span>
                       <span className="shrink-0 text-base tabular-nums sm:text-lg">
@@ -129,8 +133,8 @@ export default function Menu() {
         </ul>
       </div>
 
-      <p className="mt-10 text-sm text-muted">
-        Fictional demo dishes and prices.
+      <p className="mt-10 border-t border-line pt-5 text-xs leading-relaxed text-muted">
+        Sample menu content for this website concept. Please confirm dish availability, descriptions and prices with the restaurant before ordering.
       </p>
       <AnimatePresence>
         {sel && (

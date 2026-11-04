@@ -59,26 +59,26 @@ export const images = {
     coconutSeafoodRice: "/images/coconutSeafoodRice.jpg",
 
     // Street food
-    shawarma: "/images/Sharwama.jpeg",
+    shawarma: "/public/images/Sharwama.jpeg",
 
-    chickenChips: "/images/ChickenChips.jpeg",
+    chickenChips: "/public/images/ChickenChips.jpeg",
 
-    dodoEggs: "/images/dodoEgg.jpeg",
+    dodoEggs: "/public/images/dodoEgg.jpeg",
 
-    yamEgg: "/images/yamEgg.jpeg",
+    yamEgg: "/public/images/yamEgg.jpeg",
 
     // Desserts
-    chinChin: "/images/chinChin.jpeg",
+    chinChin: "/public/images/chinChin.jpeg",
 
-    puffPuffDessert: "/images/CreamyPuff.jpeg",
+    puffPuffDessert: "/public/images/CreamyPuff.jpeg",
 
-    plantainDessert: "/images/plaintain.jpeg",
+    plantainDessert: "/public/images/plaintain.jpeg",
 
     coconutCake:
       "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1600&q=85",
 
     // Drinks
-    zobo: "/images/Zobo.jpeg",
+    zobo: "/public/images/Zobo.jpeg",
 
     chapman:
       "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=1600&q=85",
@@ -86,7 +86,7 @@ export const images = {
     gingerPineapple:
       "https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=1600&q=85",
 
-    palmWine: "/images/PalmWine.jpeg",
+    palmWine: "/public/images/PalmWine.jpeg",
   },
 
   sections: {
@@ -118,6 +118,6 @@ export const images = {
     src: "/videos/hero.mp4" as string | null,
     poster: "/images/Amala.jpg" as string | null,
     mobileSrc: "/videos/amala_smooth_scroll.mp4" as string | null,
-    mobilePoster: "/images/hero-portrait-poster.jpg" as string | null,
+    mobilePoster: "/images/Amala.jpg" as string | null,
   },
 } as const;
