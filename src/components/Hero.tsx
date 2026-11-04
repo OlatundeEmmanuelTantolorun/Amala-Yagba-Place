@@ -9,24 +9,27 @@ gsap.registerPlugin(ScrollTrigger)
 export default function Hero() {
   const section = useRef<HTMLElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
-  const progressRef = useRef(0)
-  const frameRef = useRef<number | null>(null)
   const [scene, setScene] = useState(0)
 
   useLayoutEffect(() => {
+    const sectionEl = section.current
     const video = videoRef.current
-    if (!video) return
+    if (!sectionEl || !video) return
 
     const mobileQuery = window.matchMedia("(max-width: 899px)")
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
-    const seekTo = (progress: number) => {
-      progressRef.current = Math.max(0, Math.min(1, progress))
-      if (frameRef.current !== null) return
-      frameRef.current = requestAnimationFrame(() => {
-        frameRef.current = null
+    let raf = 0
+    let targetProgress = 0
+    let activeSource = ""
+
+    const seekVideo = (progress: number) => {
+      targetProgress = Math.max(0, Math.min(1, progress))
+      if (raf) return
+      raf = requestAnimationFrame(() => {
+        raf = 0
         if (video.readyState < HTMLMediaElement.HAVE_METADATA || !Number.isFinite(video.duration)) return
-        const target = Math.max(0, Math.min(video.duration - 0.04, progressRef.current * video.duration))
-        if (Math.abs(video.currentTime - target) > 0.045) video.currentTime = target
+        const target = Math.max(0, Math.min(video.duration - 0.03, targetProgress * video.duration))
+        // Avoid hammering the media decoder when the browser reports tiny scroll deltas.
+        if (Math.abs(video.currentTime - target) > 0.025) video.currentTime = target
       })
     }
 
@@ -34,37 +37,45 @@ export default function Hero() {
       const mobile = mobileQuery.matches
       const source = mobile ? config.video.mobileSrc : config.video.src
       const poster = mobile ? config.video.mobilePoster : config.video.poster
-      if (source && video.getAttribute("src") !== source) {
+      if (source && source !== activeSource) {
+        activeSource = source
         video.pause()
         video.src = source
         video.poster = poster ?? ""
         video.load()
-      } else if (poster) video.poster = poster
-      seekTo(progressRef.current)
-      ScrollTrigger.refresh()
+      } else if (poster) {
+        video.poster = poster
+      }
+      seekVideo(targetProgress)
     }
 
-    const onLoadedMetadata = () => seekTo(progressRef.current)
-    const onViewportChange = () => updateSource()
+    const onLoadedMetadata = () => seekVideo(targetProgress)
+    const onViewportChange = () => {
+      updateSource()
+      requestAnimationFrame(() => ScrollTrigger.refresh())
+    }
+
     video.addEventListener("loadedmetadata", onLoadedMetadata)
     mobileQuery.addEventListener("change", onViewportChange)
     video.muted = true
     video.playsInline = true
-    // Metadata first: the browser fetches the movie progressively as the visitor scrubs.
-    video.preload = "metadata"
+    // The hero is scrubbed, so buffering more of the short hero clip makes seeking much more stable.
+    video.preload = "auto"
     updateSource()
 
     const context = gsap.context(() => {
       const mm = gsap.matchMedia()
+
       mm.add("(prefers-reduced-motion: no-preference)", () => {
         const state = { progress: 0 }
         const timeline = gsap.timeline({
           scrollTrigger: {
-            trigger: section.current,
+            trigger: sectionEl,
             start: "top top",
             end: "bottom bottom",
-            scrub: 0.65,
+            scrub: 0.18,
             invalidateOnRefresh: true,
+            fastScrollEnd: true,
           },
         })
           .to(".h-title", { scale: 0.84, y: -52, duration: 0.18, ease: "power2.inOut" }, 0)
@@ -78,7 +89,7 @@ export default function Hero() {
             duration: 0.72,
             ease: "none",
             onUpdate: () => {
-              seekTo(state.progress)
+              seekVideo(state.progress)
               const nextScene = Math.min(hero.scenes.length - 1, Math.floor(state.progress * hero.scenes.length))
               setScene(current => current === nextScene ? current : nextScene)
             },
@@ -91,16 +102,16 @@ export default function Hero() {
         gsap.set(".h-film", { clipPath: "inset(0% 0% 0% 0% round 0px)" })
         gsap.set([".h-film-shade", ".h-cap", ".h-cta"], { opacity: 1, y: 0 })
         gsap.set([".h-title", ".h-cue"], { opacity: 0 })
-        seekTo(0.58)
+        seekVideo(0.58)
         setScene(Math.min(hero.scenes.length - 1, Math.floor(0.58 * hero.scenes.length)))
       })
-    }, section)
+    }, sectionEl)
 
     return () => {
       context.revert()
       video.removeEventListener("loadedmetadata", onLoadedMetadata)
       mobileQuery.removeEventListener("change", onViewportChange)
-      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current)
+      if (raf) cancelAnimationFrame(raf)
       video.pause()
       video.removeAttribute("src")
       video.load()

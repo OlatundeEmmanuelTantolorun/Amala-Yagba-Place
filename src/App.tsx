@@ -4,7 +4,6 @@ import { FaInstagram, FaFacebookF, FaWhatsapp, FaTiktok } from "react-icons/fa"
 import { config, wa } from "./config"
 import { images } from "./data/images"
 import { services, placePhotos, testimonials } from "./data/community"
-import WalkIns from "./components/WalkIns"
 import { useState } from "react"
 import Hero from "./components/Hero"
 import Menu from "./components/Menu"
@@ -97,7 +96,7 @@ export default function App() {
                 <video
                   className="block aspect-[9/16] w-full object-cover"
                   src="/videos/amala-yagba-experience.mp4"
-                  poster="/videos/amala-yagba-experience-poster.jpg"
+                  poster="/images/amala-yagba-experience-poster.jpg"
                   autoPlay
                   muted
                   loop
@@ -112,7 +111,6 @@ export default function App() {
           </div>
         </section>
 
-        <WalkIns />
 
         {testimonials.length > 0 && (
           <section aria-label="Seen on TikTok" className="bg-ember px-6 py-24 text-paper sm:py-32 md:px-12">
